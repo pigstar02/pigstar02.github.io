@@ -1,0 +1,285 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Makefile入门 | Pigstar</title>
+
+<link rel="shortcut icon" href="https://pigstar02.github.io//favicon.ico?v=1684572779315">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pigstar02.github.io//styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Pigstar
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1684572779315"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Makefile入门
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-04-16 ·
+                    </time>
+                    
+                        <a href="https://pigstar02.github.io/tag/8NnwR0FeeN/" class="post-tags">
+                            # cpp
+                        </a>
+                    
+                        <a href="https://pigstar02.github.io/tag/wt3EQIPN5P/" class="post-tags">
+                            # Makefile
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304090934026.png" alt="image-20230409093450986" loading="lazy"></figure>
+<h1 id="一-语法">一、语法</h1>
+<pre><code>tag(生成的目标文件)：(依赖文件)
+	(执行命令)
+
+.PHONY:(目标文件)#定义伪目标
+</code></pre>
+<h1 id="二-执行步骤">二、执行步骤</h1>
+<blockquote>
+<p>所有Makefile都是为了执行第一条命令</p>
+</blockquote>
+<ol>
+<li>执行第一条命令，查找相关依赖</li>
+<li>若相关先关依赖不存在或存在未更新的情况，则执行生成相关依赖的命令（如果有的话）</li>
+<li>重复1,2两条一直递归下去</li>
+</ol>
+<p><strong>更新规则</strong></p>
+<p>比较生成目标文件和依赖文件的时间，若依赖文件最近更改时间在生成文件之后则更新</p>
+<p><strong>注意</strong>:依赖文件为空则它的最近更改时间是最前的，即永远不会更新。</p>
+<h1 id="三-make-clean">三、make clean</h1>
+<pre><code>clean:
+	rm -f *.o
+</code></pre>
+<p>一般clean的使用如上所示，清除一些已生成的代码。</p>
+<p>但是除了第一次本地会已存在生成的clean文件，通过比较修改时间，命令将不会执行，提示已是最新。</p>
+<p><strong>解决方法</strong>:通过定义伪目标可不生成目标文件</p>
+<pre><code>.PHONY:clean
+clean:
+	rm -f *o
+</code></pre>
+<h1 id="四-变量">四、变量</h1>
+<h2 id="1自定义变量">1.自定义变量</h2>
+<p>变量名 = 变量值</p>
+<h2 id="2预定义变量">2.预定义变量</h2>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304091010439.png" alt="image-20230409101015407|wild" loading="lazy"></figure>
+<h2 id="3获取变量的值">3.获取变量的值</h2>
+<pre><code>$(变量名称)
+</code></pre>
+<h2 id="4例子">4.例子</h2>
+<p>原来的代码</p>
+<pre><code>app: main.c a.c b.c
+	gcc -c main.c a.c b.c
+</code></pre>
+<p>使用变量后</p>
+<pre><code>app: main.c a.c b.c
+$(CXX) -c $^ -o &amp;@
+</code></pre>
+<h1 id="五-模式匹配">五、模式匹配</h1>
+<h2 id="1通配符">1.通配符</h2>
+<pre><code>%.o:%.c
+两个%匹配的是相同字符
+$?
+上一条命令的结果
+</code></pre>
+<h2 id="2例子">2.例子</h2>
+<pre><code>add.o:add.c
+	gcc -c add.c
+sub.o:sub.c
+	gcc -c sub.c
+div.o:div.c
+	gcc -c div.c
+	
+...
+</code></pre>
+<p>使用通配符可以一条命令执行匹配模式规则的所有命令</p>
+<pre><code>%.o:%.c
+	gcc -c %.c
+</code></pre>
+<h1 id="六-函数">六、函数</h1>
+<h2 id="wildcard">wildcard</h2>
+<p>功能：获取制定目录下指定类型的文件列表</p>
+<p>参数：指定的目录，多个目录用空格隔开</p>
+<p>示例：</p>
+<pre><code>$(wildcard *.c ./sub/*.c)
+
+返回值： a.c b.c c.c d.c
+</code></pre>
+<h2 id="patsubst">patsubst</h2>
+<p>查找text是否符合pattern，是的话用replacement替换，返回替换的结果</p>
+<pre><code>$(patsubst %.c, %.o, a.c b.c)
+
+返回：a.o b.o
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://pigstar02.github.io/post/webserver常用指令/" class="post-title gt-a-link">
+                    webserver常用指令
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: '',
+		pageSize: 5,
+		recordIp: false,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://pigstar02.github.io//atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

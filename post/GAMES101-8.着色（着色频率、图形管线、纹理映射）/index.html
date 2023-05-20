@@ -1,0 +1,276 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>GAMES101-8.着色（着色频率、图形管线、纹理映射） | Pigstar</title>
+
+<link rel="shortcut icon" href="https://pigstar02.github.io//favicon.ico?v=1684572779315">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pigstar02.github.io//styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Pigstar
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1684572779315"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    GAMES101-8.着色（着色频率、图形管线、纹理映射）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-04-22 ·
+                    </time>
+                    
+                        <a href="https://pigstar02.github.io/tag/Wh5SblPNW/" class="post-tags">
+                            # GAMES101
+                        </a>
+                    
+                        <a href="https://pigstar02.github.io/tag/SrgTcQqACG/" class="post-tags">
+                            # 计算机图形学
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="高光区域">高光区域</h2>
+<p>当反射的光线直直指向相机，那就会看到这个点是高光的。</p>
+<p>当时镜面反射时，入射光线和反射光线是关于法线对称的</p>
+<p>较光滑区域的反射光分布在镜面反射光周围</p>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231230379.png" alt="image-20230423123006348" loading="lazy"></figure>
+<h3 id="半程向量">半程向量</h3>
+<p>法线是入射光线l和反射光线r形成夹角的角平分线</p>
+<p>v是视线，即相机和观测点的连线</p>
+<p>入射光线l和视线v形成夹角的角平分线就叫半程向量</p>
+<blockquote>
+<p>假设：v和r越接近等价于n和h越接近</p>
+</blockquote>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231249884.png" alt="image-20230423123429249" loading="lazy"></figure>
+<ul>
+<li>直接用视线和反射光线也行</li>
+<li>半程向量的优点是好算<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>h</mi><mo>=</mo><mfrac><mrow><mi>v</mi><mo>+</mo><mi>l</mi></mrow><mrow><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><mi>v</mi><mo>+</mo><mi>l</mi><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">h = \frac{v+l}{||v+l||}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">h</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.400108em;vertical-align:-0.52em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∣</span><span class="mord mtight">∣</span><span class="mord mathdefault mtight" style="margin-right:0.03588em;">v</span><span class="mbin mtight">+</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span><span class="mord mtight">∣</span><span class="mord mtight">∣</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">v</span><span class="mbin mtight">+</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></li>
+<li>这里不考虑角度偏移能量的损耗，只关注方向对了没（能否看到高光）</li>
+</ul>
+<p>观测到公式中有一个指数p</p>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231243171.png" alt="image-20230423124313143" loading="lazy"></figure>
+<p>观测上图可以很容易发现，随着指数增加，斜率减小（因为是负的），图像更陡。</p>
+<p>这样一旦角度有细微的变化，y轴会有较明显的变化，对变化更加敏感，区分能力增强</p>
+<p><strong>反映在画面中就是随着p的增加高光越来越小</strong></p>
+<figure data-type="image" tabindex="4"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231247552.png" alt="image-20230423124755523" loading="lazy"></figure>
+<h2 id="环境光">环境光</h2>
+<ul>
+<li>和观测角度无关</li>
+<li>和反射角度无关</li>
+</ul>
+<p>相当于一个常量，把每个点都提升一个亮度</p>
+<p><strong>这只是一个大胆的简化</strong></p>
+<figure data-type="image" tabindex="5"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231255170.png" alt="image-20230423125545138" loading="lazy"></figure>
+<h2 id="着色频率">着色频率</h2>
+<h3 id="每个面着色一次">每个面着色一次</h3>
+<figure data-type="image" tabindex="6"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231301481.png" alt="image-20230423130147449" loading="lazy"></figure>
+<h3 id="每个定点着色一次">每个定点着色一次</h3>
+<ul>
+<li>
+<p>每个顶点着色</p>
+<p>那如何求顶点的法向量？</p>
+<p>每个顶点都会被周围多个三角形所用，那么我们就用周围相关的三角形平面的法向量求个平均作为顶点的法向量</p>
+<figure data-type="image" tabindex="7"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231310596.png" alt="image-20230423131042572" loading="lazy"></figure>
+<p>但是每个三角形的影响不同，可以根据三角形的面积做一个加权平均</p>
+</li>
+<li>
+<p>平面内部的点用差值来着色</p>
+</li>
+</ul>
+<figure data-type="image" tabindex="8"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231302897.png" alt="image-20230423130224862" loading="lazy"></figure>
+<h3 id="每个像素着色一次">每个像素着色一次</h3>
+<figure data-type="image" tabindex="9"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231302123.png" alt="image-20230423130252090" loading="lazy"></figure>
+<h3 id="比较">比较</h3>
+<figure data-type="image" tabindex="10"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231306465.png" alt="image-20230423130622335" loading="lazy"></figure>
+<ul>
+<li>当面不断细分，按面着色效果很贴近后两者了，极端的想一个面的大小是一个像素，那就相当于按像素着色</li>
+</ul>
+<h2 id="实时渲染管线">实时渲染管线</h2>
+<p>这里的线说的是一个过程，相当于图形渲染的流水线</p>
+<figure data-type="image" tabindex="11"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231316769.png" alt="image-20230423131608739" loading="lazy"></figure>
+<h2 id="纹理映射">纹理映射</h2>
+<ul>
+<li>
+<p>定义不同的点有一个不同的属性</p>
+<p>有一张关于描述纹理的图，模型中每一个点都对应纹理图里的一个坐标</p>
+</li>
+</ul>
+<figure data-type="image" tabindex="12"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231340194.png" alt="image-20230423134048155" loading="lazy"></figure>
+<figure data-type="image" tabindex="13"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231343309.png" alt="image-20230423134313272" loading="lazy"></figure>
+<p>不管这张图的大小，uv坐标轴总是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo>]</mo></mrow><annotation encoding="application/x-tex">[0,1]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mclose">]</span></span></span></span></p>
+<hr>
+<figure data-type="image" tabindex="14"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304231345392.png" alt="image-20230423134538355" loading="lazy"></figure>
+<p>左边是效果图，右边是每个点对应纹理图中坐标的示意图</p>
+<p>可以看到一张图可以重复同一张纹理图，像是贴瓷砖一样</p>
+<p>右图中能看到明显的分界线，但左图却没有，这取决于纹理的设计</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://pigstar02.github.io/post/GAMES101-7.着色（光照与基本着色模型）/" class="post-title gt-a-link">
+                    GAMES101-7.着色（光照与基本着色模型）
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: '',
+		pageSize: 5,
+		recordIp: false,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://pigstar02.github.io//atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

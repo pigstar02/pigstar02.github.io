@@ -1,0 +1,290 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>GAMES101-15.光线追踪（辐射度量学、渲染方程与全局光照） | Pigstar</title>
+
+<link rel="shortcut icon" href="https://pigstar02.github.io//favicon.ico?v=1684572779315">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://pigstar02.github.io//styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Pigstar
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1684572779315"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    GAMES101-15.光线追踪（辐射度量学、渲染方程与全局光照）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-04-27 ·
+                    </time>
+                    
+                        <a href="https://pigstar02.github.io/tag/Wh5SblPNW/" class="post-tags">
+                            # GAMES101
+                        </a>
+                    
+                        <a href="https://pigstar02.github.io/tag/SrgTcQqACG/" class="post-tags">
+                            # 计算机图形学
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="辐射度量学">辐射度量学</h1>
+<p>为了精确地定义光的属性（空间上的）的方法</p>
+<p>图形学中的辐射度量学是研究和描述光在空间中传播和相互作用的科学。它涉及到能量、波长、频率、光线、光谱和颜色等概念，是图形学中渲染和光照计算的基础。</p>
+<p>辐射度量学主要关注以下几个方面：</p>
+<ol>
+<li>
+<p>能量（Radiant Energy）：指光的能量，单位是焦耳（J）</p>
+</li>
+<li>
+<p>辐射通量（Radiant Flux）：指光在单位时间内通过一个表面的能量，单位为瓦特（W）。</p>
+</li>
+<li>
+<p>辐射照度（Radiant Flux Density）：指单位面积上的辐射通量，单位为瓦特/平方米（W/m²）。</p>
+</li>
+<li>
+<p>光谱辐射度量学（Spectral Radiometry）：研究不同波长的光在空间中传播和相互作用的科学，涉及到光谱能量分布、光谱色度学、光谱成像等方面。</p>
+</li>
+<li>
+<p>能量守恒（Energy Conservation）：辐射度量学中一个重要的原则是能量守恒，即能量不能被创建或毁灭，只能被转换成其他形式。</p>
+</li>
+</ol>
+<p>在图形学中，辐射度量学可以用于计算光照模型、材质属性、阴影、反射、折射等方面，对于创建真实感的渲染效果非常重要。</p>
+<h2 id="辐射强度radiant-intensity">辐射强度Radiant Intensity</h2>
+<p>辐射（发光）强度是指每单元立体角点光源发射的光</p>
+<h3 id="立体角">立体角</h3>
+<p>二维平面中我们定义角度为弧长除以半径</p>
+<p>这样子的好处是角度不会随着半径而变化</p>
+<p>我们想要三维空间中也有这个性质</p>
+<p>所以提出立体角的概念</p>
+<p>定义为以球心为顶点的圆锥和球表面相交的面积除以半径的平方</p>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281537287.png" alt="image-20230428153740253" loading="lazy"></figure>
+<p>如何定义呢？</p>
+<p>首先光线和z轴有一个角度<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>θ</mi></mrow><annotation encoding="application/x-tex">\theta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">θ</span></span></span></span>，然后和y轴有一个角度<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span></p>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281553725.png" alt="image-20230428155303687" loading="lazy"></figure>
+<h2 id="辐照度irradiance">辐照度Irradiance</h2>
+<p>单位面积（必须和光线垂直，否则要求投影）接收的光照</p>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281644763.png" alt="image-20230428164448736" loading="lazy"></figure>
+<figure data-type="image" tabindex="4"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281648773.png" alt="image-20230428164836726" loading="lazy"></figure>
+<p>之前的理解是能量均匀分布在球壳上</p>
+<p>其实就是辐照度的概念，是和距离平方成反比的</p>
+<p>但是辐射强度就不会变化，因为立体角不变，和球壳相交的面积会随着距离增加而增加</p>
+<h2 id="辐射radiance">辐射Radiance</h2>
+<p>辐射是描述光在环境中的分布</p>
+<p>每投影单位面积每单位立体角的功率。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mtable><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>L</mi><mo>(</mo><mi>p</mi><mo separator="true">,</mo><mi>ω</mi><mo>)</mo><mo>=</mo><mfrac><mrow><msup><mtext>d</mtext><mn>2</mn></msup><mi mathvariant="normal">Φ</mi><mo>(</mo><mtext>p</mtext><mo separator="true">,</mo><mi>ω</mi><mo>)</mo></mrow><mrow><mtext>d</mtext><mi>ω</mi><mtext>d</mtext><mi>A</mi><mi>cos</mi><mo>⁡</mo><mi>θ</mi></mrow></mfrac></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{gathered}
+L(p,\omega) = 
+\frac{\text{d}^2\Phi(\text{p},\omega) }
+{\text{d}\omega\text{d}A\cos\theta }
+\end{gathered}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.561448em;vertical-align:-1.0307240000000002em;"></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.5307239999999998em;"><span style="top:-3.5307239999999998em;"><span class="pstrut" style="height:3.5754479999999997em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.575448em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">d</span></span><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="mord text"><span class="mord">d</span></span><span class="mord mathdefault">A</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">cos</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">θ</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord text"><span class="mord">d</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8984479999999999em;"><span style="top:-3.1473400000000002em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord">Φ</span><span class="mopen">(</span><span class="mord text"><span class="mord">p</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.0307240000000002em;"><span></span></span></span></span></span></span></span></span></span></span></span></p>
+<blockquote>
+<p>和Irradiance比有了方向</p>
+</blockquote>
+<figure data-type="image" tabindex="5"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281703940.png" alt="image-20230428170314875" loading="lazy"></figure>
+<p><strong>Irradiance就是各个方向的radiance积分</strong></p>
+<h2 id="反射">反射</h2>
+<p>过程理解成某一个小块接收到了能量，然后再把它发射到四面八方</p>
+<h3 id="brdf">BRDF</h3>
+<p>不同方向反射的能量分布是不同的</p>
+<p>BRDF描述了反射能量是如何分布的</p>
+<figure data-type="image" tabindex="6"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281709206.png" alt="image-20230428170904170" loading="lazy"></figure>
+<h3 id="渲染方程">渲染方程</h3>
+<p>就是在上面的基础上考虑上自身发光的能量</p>
+<p>而且上面只考虑了光源，也有可能经过别的物体反射的光照到了着色点，也要加上</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mi>o</mi></msub><mo>(</mo><mi>p</mi><mo separator="true">,</mo><msub><mi>ω</mi><mi>o</mi></msub><mo>)</mo><mo>=</mo><msub><mi>L</mi><mi>e</mi></msub><mo>(</mo><mi>p</mi><mo separator="true">,</mo><msub><mi>ω</mi><mi>o</mi></msub><mo>)</mo><mo>+</mo><msub><mo>∫</mo><msup><mi mathvariant="normal">Ω</mi><mo>+</mo></msup></msub><msub><mi>L</mi><mi>i</mi></msub><mo>(</mo><mi>p</mi><mo separator="true">,</mo><msub><mi>ω</mi><mi>i</mi></msub><mo>)</mo><msub><mi>f</mi><mi>r</mi></msub><mo>(</mo><mi>p</mi><mo separator="true">,</mo><msub><mi>ω</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>ω</mi><mi>o</mi></msub><mo>)</mo><mo>(</mo><mi>n</mi><mo>⋅</mo><msub><mi>ω</mi><mi>i</mi></msub><mo>)</mo><mi mathvariant="normal">d</mi><msub><mi>ω</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">L_{o}(p,\omega_{o})=L_{e}(p,\omega_{o})+\int_{\Omega^{+}}L_{i}(p,\omega_{i})f_{r}(p,\omega_{i},\omega_{o})(n\cdot\omega_{i})\mathrm{d}\omega_{i}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.27195em;vertical-align:-0.9119499999999999em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:-0.42008499999999993em;"><span style="top:-1.7880500000000001em;margin-left:-0.44445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight">Ω</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7026642857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">+</span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9119499999999999em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">o</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord"><span class="mord mathrm">d</span></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>面光源可以看成点光源的集合</p>
+<p>求解时把求和换成积分即可</p>
+<h2 id="全局光照">全局光照</h2>
+<p>经过一系列数学变换，渲染方程可以写成算子的形式</p>
+<figure data-type="image" tabindex="7"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281727284.png" alt="image-20230428172719248" loading="lazy"></figure>
+<p>展开</p>
+<figure data-type="image" tabindex="8"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281727752.png" alt="image-20230428172733720" loading="lazy"></figure>
+<p>这样就可以看成多次反射的叠加</p>
+<figure data-type="image" tabindex="9"><img src="https://raw.githubusercontent.com/pigstar02/blog_img/main/202304281728838.png" alt="image-20230428172811806" loading="lazy"></figure>
+<p>![image-20230428173314700](/Users/zxy/Library/Application Support/typora-user-images/image-20230428173314700.png)</p>
+<ul>
+<li>
+<p>随着反射光线变多，变得越来越亮</p>
+<p>但不是无限制的叠加，最后会收敛到一个值</p>
+</li>
+<li>
+<p>上方的灯会突然变亮是因为在玻璃中会反射多次，所以增加一次可能还没有反射出来</p>
+</li>
+<li>
+<p>只考虑自身发光就是光栅化的效果</p>
+</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://pigstar02.github.io/post/GAMES101-14.光线追踪（加速结构）/" class="post-title gt-a-link">
+                    GAMES101-14.光线追踪（加速结构）
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: '',
+		appKey: '',
+		avatar: '',
+		pageSize: 5,
+		recordIp: false,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">温故而知新</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://pigstar02.github.io//atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
