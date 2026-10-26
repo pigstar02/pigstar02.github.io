@@ -1,0 +1,3 @@
+# Public visual review only; this is not an index of personal hiking history.
+User-agent: *
+Disallow: /
